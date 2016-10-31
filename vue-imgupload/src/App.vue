@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <imguploader :file-max-length = '3' accept="image/jpeg,image/png" :single-file-size = '23000'></imguploader> 
+    <imguploader :uploadurl = 'uploadurl' :file-max-length = '3' accept="image/jpeg,image/png" :single-file-size = '23000'></imguploader> 
     <a href="javascript:void(0);" @click="upload">上传</a>
   </div>
 </template>
@@ -10,6 +10,11 @@ import imguploader from './components/imguploader'
 
 export default {
   name: 'app',
+  data () {
+    return {
+      uploadurl: 'http://www.3dker.cn/japi/dev/upload/imgUpload?accessOpenId=450958219a8349b1aab39257d1efe647&language=zh-CN&userId=%2256f2405c9c774e1d00f9f0d8%22'
+    }
+  },
   components: [
     imguploader
   ],

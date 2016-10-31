@@ -10,7 +10,8 @@ export default {
   data () {
     return {
       id: `uploader${Math.random().toString(36).substr(3, 3)}`, // 唯一id
-      uploadFileLength: 0 //已经上传文件的数量
+      uploadFileLength: 0, //已经上传文件的数量
+      getopidanduploadurl: false //上传前获得异步上传地址
     }
   },
   props: {
@@ -29,6 +30,9 @@ export default {
     fileMaxLength: {     // allfile size that is smart to computed 🙂
       type: Number,
       default: 10 
+    },
+    uploadurl: {        //传到服务器后台的url必传
+      type: String
     }
   },
   events: {
@@ -59,7 +63,8 @@ export default {
           reader.readAsDataURL(nowFile);
           //监听reader加载完成的事件
           reader.addEventListener('load', (e) => {
-            let file = e.target.result;
+            let file = e.target.result;   //base64
+            this.uploaderHandle(nowFile);
           });
         };
       }
@@ -84,12 +89,34 @@ export default {
         }
       }
       return allowUp;
+    },
+    uploaderHandle (nowFile) {
+      //因为垃圾后台不支持多张图片上传 那么就只好一张张的上传咯 😡
+      //等待前台的上传地址加载完成后才能运行真正的上传
+      if(this.uploadurl) {
+        let fm = new window.FormData();
+        fm.append('files[]', nowFile);
+        //正儿八经的上传
+        window.fetch(this.uploadurl, {
+          body:fm,
+          method: 'POST'
+        }).then(data => {
+          console.log(data);
+        }).catch(err => {
+          console.log(err);
+        })
+      }else {
+        alert('网络有点异常，请稍后重试');
+        return false;
+      }
+    }
+  },
+  watch: {
+    //watch来观察传进来的异步 数据
+    uploadurl (n) {
+      n ? this.uploadurl = n : null;
     }
   }
 }
 </script>
-<style scoped>
-h1 {
-  color: #42b983;
-}
-</style>
+
