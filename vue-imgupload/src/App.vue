@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <imguploader :uploadurl = 'uploadurl' :file-max-length = '3' accept="image/jpeg,image/png" :single-file-size = '23000'></imguploader> 
-    <a href="javascript:void(0);" @click="upload">上传</a>
+    <imguploader :uploadurl = 'uploadurl' :file-max-length = '3' accept="image/jpeg,image/png" :single-file-size = '930000'></imguploader> 
+    <a href="javascript:void(0);" @click="upload">呵呵</a>
   </div>
 </template>
 

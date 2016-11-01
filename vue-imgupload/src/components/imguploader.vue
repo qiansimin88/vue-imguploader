@@ -61,11 +61,13 @@ export default {
           //js reader方法强制生成base64的字符串
           let reader = new window.FileReader();
           reader.readAsDataURL(nowFile);
-          //监听reader加载完成的事件
-          reader.addEventListener('load', (e) => {
-            let file = e.target.result;   //base64
-            this.uploaderHandle(nowFile);
-          });
+          //监听reader加载完成的事件   注意闭包问题
+          reader.onload = (function (nowFile, content) {
+            return function (e) {
+              let file = e.target.result;  //base64
+              content.uploaderHandle(nowFile, file);  
+            };
+          })(nowFile, this);
         };
       }
     },
@@ -95,15 +97,22 @@ export default {
       //等待前台的上传地址加载完成后才能运行真正的上传
       if(this.uploadurl) {
         let fm = new window.FormData();
-        fm.append('files[]', nowFile);
+        fm.append('files[]'+ String(Math.random()).substring(3,6), nowFile);
         //正儿八经的上传
         window.fetch(this.uploadurl, {
           body:fm,
           method: 'POST'
         }).then(data => {
+            if(data.status >=200 && data.status < 300 && data.statusText === 'OK') {
+              return Promise.resolve(data.json());
+            }else {
+               throw Error(data.statusText);
+            }
+        }).then(data => {
           console.log(data);
         }).catch(err => {
           console.log(err);
+          alert('网络错误');
         })
       }else {
         alert('网络有点异常，请稍后重试');
